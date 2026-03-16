@@ -30,7 +30,11 @@ export default defineConfig((/* ctx */) => {
     },
 
     framework: {
-      config: {},
+      config: {
+        brand: {
+          primary: '#1D9E75'
+        }
+      },
       plugins: [ 'Notify' ]
     },
 

@@ -15,7 +15,14 @@
           Primeform Elite Coaching
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          dense
+          round
+          icon="logout"
+          aria-label="Uitloggen"
+          @click="onLogout"
+        />
       </q-toolbar>
     </q-header>
 
@@ -45,7 +52,18 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { signOut } from 'firebase/auth'
+import { auth } from '../config/firebase'
 import EssentialLink from 'components/EssentialLink.vue'
+
+const router = useRouter()
+
+async function onLogout () {
+  await signOut(auth)
+  localStorage.removeItem('userId')
+  await router.push('/login')
+}
 
 const linksList = [
   {
