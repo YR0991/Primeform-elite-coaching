@@ -1,0 +1,5 @@
+export const ELITE_USERS = 'elite_users'
+export const SPORT_PROFILES = 'sport_profiles'
+export const ELITE_CHECKINS = 'elite_checkins'
+export const ELITE_PLANS = 'elite_plans'
+export const ELITE_DAILY_OUTPUT = 'elite_daily_output'
