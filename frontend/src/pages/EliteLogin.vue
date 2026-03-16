@@ -1,5 +1,5 @@
 <template>
-  <q-page class="elite-login flex flex-center">
+  <div class="elite-login flex flex-center">
     <div class="login-card">
       <div class="login-header">
         <h1 class="login-title">PrimeForm Elite</h1>
@@ -48,7 +48,7 @@
         />
       </q-form>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script setup>
