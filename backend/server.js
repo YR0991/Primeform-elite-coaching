@@ -13,7 +13,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Primeform API is running' })
+  res.json({ status: 'ok', service: 'primeform-elite-backend' })
 })
 
 app.use('/api/elite', checkinRouter)
