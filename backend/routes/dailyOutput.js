@@ -55,8 +55,17 @@ router.get('/daily-output', async (req, res) => {
     }
 
     const data = snapshot.docs[0].data()
+    const drs = data.drs || {}
     res.json({
-      drs: data.drs,
+      drs: {
+        score: drs.score,
+        status: drs.status,
+        breakdown: {
+          hrv: drs.breakdown?.hrv ?? 50,
+          rhr: drs.breakdown?.rhr ?? 50,
+          subjective: drs.breakdown?.subjective ?? 50
+        }
+      },
       adapted_workout: data.adapted_workout,
       workout_adapted: data.workout_adapted,
       macros: data.macros,
@@ -196,11 +205,19 @@ router.post('/daily-output', async (req, res) => {
 
     const oracleMessage = await generateOracleMessage(athleteData)
 
-    // 12. Sla dagresultaat op
+    // 12. Sla dagresultaat op (expliciet breakdown voor Firestore)
     const dailyOutputData = {
       userId,
       date,
-      drs,
+      drs: {
+        score: drs.score,
+        status: drs.status,
+        breakdown: {
+          hrv: drs.breakdown?.hrv ?? 50,
+          rhr: drs.breakdown?.rhr ?? 50,
+          subjective: drs.breakdown?.subjective ?? 50
+        }
+      },
       planned_workout: plannedWorkout,
       adapted_workout: adaptedWorkout,
       workout_adapted: workoutAdapted,
@@ -215,7 +232,7 @@ router.post('/daily-output', async (req, res) => {
 
     // 13. Geef resultaat terug
     res.status(201).json({
-      drs,
+      drs: dailyOutputData.drs,
       adapted_workout: adaptedWorkout,
       macros,
       oracle_message: oracleMessage,

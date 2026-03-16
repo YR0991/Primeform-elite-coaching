@@ -21,13 +21,13 @@ export function adaptWorkout (plannedWorkout, drsStatus) {
   }
 
   if (drsStatus === 'red') {
-    return {
+    return ensureRecoveryDuration({
       name: 'Actief herstel',
       duration_minutes: 30,
       intensity_zone: 1,
       type: 'recovery',
       description: 'DRS rood — rust en herstel vandaag'
-    }
+    })
   }
 
   if (drsStatus === 'amber') {
@@ -35,15 +35,26 @@ export function adaptWorkout (plannedWorkout, drsStatus) {
     const adaptedZone = Math.max(1, plannedWorkout.intensity_zone - 1)
     const adjustmentNote = 'Aangepast: DRS amber — verminderde intensiteit en duur.'
 
-    return {
+    const result = {
       ...plannedWorkout,
       duration_minutes: adaptedDuration,
       intensity_zone: adaptedZone,
       description: [plannedWorkout.description, adjustmentNote].filter(Boolean).join(' ')
     }
+    return ensureRecoveryDuration(result)
   }
 
-  return { ...plannedWorkout }
+  return ensureRecoveryDuration({ ...plannedWorkout })
+}
+
+/**
+ * Zorgt dat herstelworkouts altijd 30 minuten tonen.
+ */
+function ensureRecoveryDuration (workout) {
+  if ((workout.type === 'recovery' || workout.type === 'rest') && (!workout.duration_minutes || workout.duration_minutes === 0)) {
+    return { ...workout, duration_minutes: 30 }
+  }
+  return workout
 }
 
 /**
