@@ -49,16 +49,22 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
+    title: 'Onboarding',
+    caption: 'Start hier',
+    icon: 'rocket_launch',
+    link: '/onboarding'
+  },
+  {
     title: 'Check-in',
     caption: 'Dagelijkse check-in',
     icon: 'favorite',
-    link: '/elite/checkin'
+    link: '/checkin'
   },
   {
     title: 'Dashboard',
     caption: 'Elite dashboard',
     icon: 'dashboard',
-    link: '/elite/dashboard'
+    link: '/dashboard'
   },
   {
     title: 'Docs',

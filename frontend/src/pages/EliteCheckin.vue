@@ -193,7 +193,7 @@ async function onSubmit () {
     }).catch(() => {}) // Negeer fout — dashboard toont dan lege staat
 
     setTimeout(() => {
-      router.push('/elite/dashboard')
+      router.push('/dashboard')
     }, 2000)
   } catch (error) {
     console.error(error)

@@ -3,6 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import checkinRouter from './routes/checkin.js'
 import dailyOutputRouter from './routes/dailyOutput.js'
+import planRouter from './routes/plan.js'
+import profileRouter from './routes/profile.js'
 
 dotenv.config()
 
@@ -28,6 +30,8 @@ app.get('/test-firebase', async (req, res) => {
 
 app.use('/api/elite', checkinRouter)
 app.use('/api/elite', dailyOutputRouter)
+app.use('/api/elite', planRouter)
+app.use('/api/elite', profileRouter)
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

@@ -19,18 +19,6 @@ import { generateOracleMessage } from '../engine/oracle.js'
 const router = express.Router()
 
 /**
- * Berekent ISO week string (bijv. "2025-W12") voor een datum.
- */
-function getISOWeek (dateStr) {
-  const d = new Date(dateStr)
-  d.setHours(0, 0, 0, 0)
-  d.setDate(d.getDate() + 4 - (d.getDay() || 7))
-  const yearStart = new Date(d.getFullYear(), 0, 1)
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-  return `${d.getFullYear()}-W${String(weekNo).padStart(2, '0')}`
-}
-
-/**
  * Dag van de week voor trainingsplan: 1=maandag, 7=zondag.
  */
 function getPlanDayKey (dateStr) {
@@ -114,27 +102,30 @@ router.post('/daily-output', async (req, res) => {
     const drs = checkin.drs
     const drsStatus = drs.status
 
-    // 3. Haal geplande workout op
-    const isoWeek = getISOWeek(date)
+    // 3. Haal geplande workout op (uit elite_plans: userId_weekNumber structuur)
     const dayKey = getPlanDayKey(date)
-
-    const planSnapshot = await db.collection(ELITE_PLANS)
-      .where('userId', '==', userId)
-      .where('week', '==', isoWeek)
-      .limit(1)
-      .get()
-
     let plannedWorkout = DEFAULT_WORKOUT
-    if (!planSnapshot.empty) {
-      const plan = planSnapshot.docs[0].data()
-      const workoutForDay = plan.workouts?.[String(dayKey)] ?? plan.workouts?.[dayKey]
-      if (workoutForDay) {
-        plannedWorkout = {
-          name: workoutForDay.name ?? 'Workout',
-          duration_minutes: workoutForDay.duration_minutes ?? 0,
-          intensity_zone: workoutForDay.intensity_zone ?? 1,
-          type: workoutForDay.type ?? 'rest',
-          description: workoutForDay.description ?? ''
+
+    const planGeneratedAt = user.plan_generated_at
+    if (planGeneratedAt) {
+      const planStart = new Date(planGeneratedAt)
+      const dateObj = new Date(date)
+      const msPerWeek = 7 * 24 * 60 * 60 * 1000
+      const weeksSinceStart = Math.floor((dateObj - planStart) / msPerWeek)
+      const planWeekNumber = weeksSinceStart + 1
+
+      const planDoc = await db.collection(ELITE_PLANS).doc(`${userId}_${planWeekNumber}`).get()
+      if (planDoc.exists) {
+        const plan = planDoc.data()
+        const workoutForDay = plan.workouts?.[String(dayKey)] ?? plan.workouts?.[dayKey]
+        if (workoutForDay) {
+          plannedWorkout = {
+            name: workoutForDay.name ?? 'Workout',
+            duration_minutes: workoutForDay.duration_minutes ?? 0,
+            intensity_zone: workoutForDay.intensity_zone ?? 1,
+            type: workoutForDay.type ?? 'rest',
+            description: workoutForDay.description ?? ''
+          }
         }
       }
     }
