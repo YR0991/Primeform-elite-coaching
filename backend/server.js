@@ -16,6 +16,16 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'primeform-elite-backend' })
 })
 
+app.get('/test-firebase', async (req, res) => {
+  try {
+    const { db } = await import('./config/firebase.js')
+    const test = await db.collection('_test').limit(1).get()
+    res.json({ status: 'firebase ok', connected: true })
+  } catch (error) {
+    res.json({ status: 'firebase error', message: error.message })
+  }
+})
+
 app.use('/api/elite', checkinRouter)
 app.use('/api/elite', dailyOutputRouter)
 
